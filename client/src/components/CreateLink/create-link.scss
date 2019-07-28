@@ -1,0 +1,15 @@
+.create-link {
+    display: flex;
+    justify-content: center;
+    padding: 50px 60px;
+
+    &__form {
+        display: flex;
+        width: 500px;
+        
+        .g__input {
+            flex: 1;
+            margin-right: 5px;
+        }
+    }
+}
