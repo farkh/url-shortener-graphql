@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import axios from 'axios';
+import { useDispatch, useMappedState } from 'redux-react-hook';
 import { withRouter } from 'react-router-dom';
-import { useDispatch } from 'redux-react-hook';
 import {
     Container,
     Row,
@@ -14,16 +14,28 @@ import {
     Button,
 } from 'reactstrap';
 
+import Loader from '../Loader/Loader';
+
 import * as actions from '../../constants/actions_types';
 import * as routes from '../../constants/routes';
 
-const SignIn = (props) => {
+const SignUp = (props) => {
     const dispatch = useDispatch();
+
+    const mapState = useCallback((state) => ({
+        authUser: state.sessionState.authUser,
+    }), []);
+
+    const { authUser } = useMappedState(mapState);
+
+    if (authUser) props.history.push(routes.HOME);
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirm, setConfirm] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    
+
     const _handleChange = setter => e => {
         setter(e.target.value);
     };
@@ -32,26 +44,30 @@ const SignIn = (props) => {
         if (e) e.preventDefault();
         setLoading(true);
 
-        try {
-            const requestBody = {
-                query: `
-                    query {
-                        login(email: "${email}", password: "${password}") {
-                            _id
-                            token
-                            email
-                        }
+        const requestbody = {
+            query: `
+                mutation {
+                    createUser(userInput: {
+                        email: "${email}"
+                        password: "${password}"
+                        confirm: "${confirm}"
+                    }) {
+                        _id
+                        token
+                        email
                     }
-                `,
-            };
+                }
+            `,
+        };
 
-            const { data } = await axios.post('/api', requestBody);
+        try {
+            const { data } = await axios.post('/api', requestbody);
 
             if (data.errors) {
-                setLoading(false);
                 setError(data.errors[0].message);
+                setLoading(false);
             } else {
-                const { _id, token } = data.data.login;
+                const { _id, token } = await data.data.createUser;
 
                 dispatch({
                     type: actions.SET_AUTH_USER,
@@ -60,22 +76,24 @@ const SignIn = (props) => {
                         email,
                     },
                 });
-                setLoading(false);
                 setError(null);
+                setLoading(false);
                 localStorage.setItem('token', token);
                 props.history.push(routes.HOME);
             }
-        } catch(err) {
+        } catch (err) {
             setError(err);
             setLoading(false);
         }
     };
     
+    if (loading) return <Loader />;
+    
     return (
         <Container className="content">
             <Row>
                 <Col sm="12" md={{ size: 6, offset: 3 }}>
-                    <h1>Login</h1>
+                    <h1>Sign Up</h1>
                 </Col>
             </Row>
             <Row>
@@ -106,7 +124,22 @@ const SignIn = (props) => {
                             <FormFeedback>Password incorrect</FormFeedback>
                         </FormGroup>
 
-                        <Button color="primary">Login</Button>
+                        <FormGroup>
+                            <Label for="password">Password</Label>
+                            <Input
+                                type="password"
+                                name="confirm"
+                                id="confirm"
+                                placeholder="••••••"
+                                value={confirm}
+                                onChange={_handleChange(setConfirm)}
+                            />
+                            <FormFeedback>Passwords must match</FormFeedback>
+                        </FormGroup>
+
+                        {error && <p>{error}</p>}
+
+                        <Button color="primary">Sign Up</Button>
                     </Form>
                 </Col>
             </Row>
@@ -114,4 +147,4 @@ const SignIn = (props) => {
     );
 };
 
-export default withRouter(SignIn);
+export default withRouter(SignUp);

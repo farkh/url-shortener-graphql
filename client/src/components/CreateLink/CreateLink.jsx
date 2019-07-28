@@ -4,7 +4,7 @@ import './create-link.scss';
 
 const CreateLink = (props) => {
     const [longUrl, setLongUrl] = useState('');
-    const [expDate, setExpDate] = useState(null);
+    // const [expDate, setExpDate] = useState(null);
     
     const handleInputChange = setter => e => {
         setter(e.target.value);
@@ -14,7 +14,7 @@ const CreateLink = (props) => {
         <div className="create-link">
             <form className="create-link__form" onSubmit={(e) => props.onSubmit(e, longUrl)}>
                 <input
-                    type="text"
+                    type="url"
                     className="g__input"
                     placeholder="Enter the URL..."
                     value={longUrl}

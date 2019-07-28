@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { useMappedState } from 'redux-react-hook';
 
-import Login from './components/Login/Login.jsx';
 import useWithAuthentificate from './components/WithAuthenticate';
-import Navigation from './components/Navigation';
+import Navigation from './components/Navigation/Navigation';
 import Home from './components/Home/Home';
-import NotFound from './components/NotFound';
-import SignUp from './components/SignUp';
+import NotFound from './components/NotFound/NotFound';
+import SignUp from './components/SignUp/SignUp';
+import Login from './components/Login/Login';
+import Loader from './components/Loader/Loader';
 
 import * as routes from './constants/routes';
 
 const App = () => {
   useWithAuthentificate();
+
+  const mapState = useCallback((state) => ({
+    loading: state.sessionState.loading,
+  }), []);
+
+  const { loading } = useMappedState(mapState);
+
+  if (loading) return <Loader />;
   
   return (
     <Router basename={process.env.PUBLIC_URL}>
