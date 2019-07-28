@@ -5,8 +5,9 @@ import axios from 'axios';
 
 import store from './store';
 
-import App from './components/App';
-import './index.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import App from './App';
+import './index.scss';
 
 (function() {
     const token = localStorage.getItem('token');
