@@ -2,6 +2,17 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import { useDispatch } from 'redux-react-hook';
+import {
+    Container,
+    Row,
+    Col,
+    Form,
+    FormGroup,
+    Label,
+    Input,
+    FormFeedback,
+    Button,
+} from 'reactstrap';
 
 import * as actions from '../../constants/actions_types';
 import * as routes from '../../constants/routes';
@@ -61,31 +72,45 @@ const SignIn = (props) => {
     };
     
     return (
-        <div className="content">
-            <h1>Login</h1>
+        <Container className="content">
+            <Row>
+                <Col sm="12" md={{ size: 6, offset: 3 }}>
+                    <h1>Login</h1>
+                </Col>
+            </Row>
+            <Row>
+                <Col sm="12" md={{ size: 6, offset: 3 }}>
+                    <Form onSubmit={_handleSubmit}>
+                        <FormGroup>
+                            <Label for="email">Email</Label>
+                            <Input
+                                type="email"
+                                name="email"
+                                id="email"
+                                placeholder="something@example.com"
+                                value={email}
+                                onChange={_handleChange(setEmail)}
+                            />
+                            <FormFeedback>Email not found</FormFeedback>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="password">Password</Label>
+                            <Input
+                                type="password"
+                                name="password"
+                                id="password"
+                                placeholder="••••••"
+                                value={password}
+                                onChange={_handleChange(setPassword)}
+                            />
+                            <FormFeedback>Password incorrect</FormFeedback>
+                        </FormGroup>
 
-            <form className="form" onSubmit={_handleSubmit}>
-                <input
-                    type="text"
-                    name="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={_handleChange(setEmail)}
-                />
-
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={_handleChange(setPassword)}
-                />
-
-                <div><span style={{ color: "red" }}>{error || ""}</span></div>
-
-                <input type="submit" value={loading ? 'Verifying...' : 'Login'} />
-            </form>
-        </div>
+                        <Button color="primary">Login</Button>
+                    </Form>
+                </Col>
+            </Row>
+        </Container>
     );
 };
 
